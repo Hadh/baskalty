@@ -6,12 +6,14 @@ use AppBundle\Entity\User;
 use EventBundle\Entity\Event;
 use EventBundle\Repository\EventRepository;
 use Knp\Bundle\SnappyBundle\Snappy\Response\PdfResponse;
+use Swift_Attachment;
 use Swift_Image;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use Endroid\QrCode\QrCode;
 
 /**
  * Event controller.
@@ -96,10 +98,12 @@ class EventController extends Controller
         // uniqid(), which is based on timestamps
         return md5(uniqid());
     }
+
     /**
      * Finds and displays a event entity.
      *
      */
+
     public function showAction(Event $event)
     {
         $deleteForm = $this->createDeleteForm($event);
@@ -310,12 +314,19 @@ class EventController extends Controller
         /* @var User $user*/
         $user = $this->getUser();
 
+        $qrCode = new QrCode($user->getUsername()." with Email : ". $user->getEmail());
+
+        $qrCode->writeFile($this->get('kernel')->getRootDir() . '/../web/'.$user->getUsername().'.png');
+
+        $dataUri = $qrCode->writeDataUri();
+
         $event->addParticipants($user);
         $event->setNbPlace($event->getNbPlace() - 1);
         $user->addEvenements($event);
         $em->persist($event);
         $em->persist($user);
         $em->flush();
+        $this->sendEmail($user,'Confirmation de Participation','@Event/event/emailTemplateParticipate.html.twig', $event, $dataUri);
         return $this->redirectToRoute('event_show', array('id' => $event->getId()));
     }
 
@@ -337,18 +348,21 @@ class EventController extends Controller
     }
 
 
-    public function sendEmail($utilisateur, $subject, $view, $event)
+    public function sendEmail(User $utilisateur, $subject, $view, $event, $qr = null)
     {
         $mail = \Swift_Message::newInstance()
             ->setSubject($subject)
             ->setFrom('baskaltyinc@gmail.com')
-            ->setTo($utilisateur->getEmail());
+            ->setTo($utilisateur->getEmail())
+            ->attach(
+                Swift_Attachment::fromPath($this->get('kernel')->getRootDir() . '/../web/'.$utilisateur->getUsername().'.png')
+            ->setDisposition('inline'));
 
         $mail->setBody(
             $this->renderView(
                 $view,
-                array('username' => $utilisateur->getUsername(),
-                    'event' => $event)
+                array('user' => $utilisateur,
+                    'event' => $event, 'qr' => $qr)
             ),
             'text/html'
         );
@@ -385,8 +399,9 @@ class EventController extends Controller
         ]);
 
     }
-
-    /* Back Office / Admin Section*/
+    /***-----------------------***/
+    /* Back Office / Admin Section-----*/
+    /***-----------------------***/
     public function indexAdminAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
@@ -408,6 +423,17 @@ class EventController extends Controller
 
         $em->flush();
         return $this->redirectToRoute('admin_event_index');
+    }
+
+    public function showEventAdminAction($id)
+    {
+        $em = $this->getDoctrine()->getManager();
+        /* @var Event $event*/
+        $event = $em->getRepository(Event::class)->find($id);
+
+        return $this->render('@Event/admin/show_event.html.twig', array(
+            'event' => $event
+        ));
     }
 
 }

@@ -26,28 +26,9 @@
     </head>
     <body>
 
-    <div class="wrapper">
-        <div class="preloader"></div>
+    <div class="">
+        <div class=""></div>
         <!-- Main Header Nav -->
-        <header class="header-nav style_one navbar-scrolltofixed main-menu">
-            <div class="container">
-                <!-- Ace Responsive Menu -->
-                <nav>
-                    <!-- Menu Toggle btn-->
-                    <div class="menu-toggle">
-                        <button type="button" id="menu-btn">
-                            <span class="icon-bar"></span>
-                            <span class="icon-bar"></span>
-                            <span class="icon-bar"></span>
-                        </button>
-                    </div>
-
-
-
-                </nav>
-                <!-- End of Responsive Menu -->
-            </div>
-        </header>
 
         <!-- Main Header Nav For Mobile -->
         <div id="page" class="stylehome1 h0">
@@ -55,40 +36,16 @@
             <script type="text/javascript" src="{{ asset('front/js/jquery-3.3.1.js') }}"></script>
 
             <div class="job-detail-description">
-                <h3 class="title-detail-job">Bonjour {{ username }} ! </h3>
+                <h3 class="title-detail-job">Bonjour {{ user.username }} ! </h3>
                 <div class="inner">
-                    <p> L'évenement : {{ event.title }} a été mis à jour. On vous invite à consulter les nouvelles changements.</p>
-                    <div class="ef_post style2 mt30-smd">
-                        <div class="ef_header">
-                            <h4 class="hr_rate"><span class="text-thm">Détails de l'événement</span></h4>
+                    <p> Votre participation à  L'évenement : {{ event.title }} à {{ event.location }} est bien prise en compte. </p>
+                    <h5>Veuillez imprimer ou montrer le contenu de ce mail le jour de l'événement.</h5>
 
-                        </div>
-                        <div class="freelancer_review">
-                            <h4 class="title"> titre : {{ event.title }}</h4>
-                            <p> Lieu :{{ event.location }}</p>
-                        </div>
-                        <div class="details">
-                            <div class="job_locate">
-                                <p>Date de début</p>
-                                <ul class="float-right">
-                                    <li class="list-inline-item m0"><p>{{ event.startDate | date("j. F Y", "Europe/Paris") }}</p></li>
-                                </ul>
-                            </div>
-                            <div class="job_srate">
-                                <p>Date de fin</p>
-                                <ul class="float-right">
-                                    <li class="list-inline-item m0"><p>{{ event.endDate | date("j. F Y", "Europe/Paris") }}</p></li>
-                                </ul>
-                            </div>
-                            <div class="job_srate">
-                                <p class="float-right">Nombre de place :{{ event.nbPlace}}</p>
-                            </div>
-                            <div class="job_srate">
-                                <p class="float-right">Description :{{ event.description}}</p>
-                            </div>
-                        </div>
+                    <div class="ef_post style2 mt30-smd">
                     </div>
-                    <h4>L'équipe Baskalty vous remercie pour votre compréhension! à bientôt !</h4>
+                    <h4>L'équipe Baskalty vous remercie! à bientôt !</h4>
+                    <h4>Cordialement, </h4>
+                    <h5>BASKALTY INC.</h5>
                 </div>
             </div>
 

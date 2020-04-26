@@ -68,3 +68,8 @@ admin_accept_event:
     path:     admin/{id}/accept_event
     defaults: { _controller: "EventBundle:Event:acceptEvent" }
     methods:  [GET, POST]
+
+admin_event_show:
+    path:     /admin/{id}/show
+    defaults: { _controller: "EventBundle:Event:showEventAdmin" }
+    methods:  GET
