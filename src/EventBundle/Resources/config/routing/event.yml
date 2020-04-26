@@ -1,0 +1,70 @@
+event_index:
+    path:     /
+    defaults: { _controller: "EventBundle:Event:index" }
+    methods:  [GET, POST]
+
+event_search_result:
+    path:     /search
+    defaults: { _controller: "EventBundle:Event:search" }
+    methods:  [GET, POST]
+
+my_event_search_result:
+    path:     /search/my/events
+    defaults: { _controller: "EventBundle:Event:searchMyEvents" }
+    methods:  [GET, POST]
+
+event_my_event:
+    path:     /my/events
+    defaults: { _controller: "EventBundle:Event:myEvents" }
+    methods:  [GET, POST]
+
+event_show:
+    path:     /{id}/show
+    defaults: { _controller: "EventBundle:Event:show" }
+    methods:  GET
+
+event_new:
+    path:     /new
+    defaults: { _controller: "EventBundle:Event:new" }
+    methods:  [GET, POST]
+
+event_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "EventBundle:Event:edit" }
+    methods:  [GET, POST]
+
+event_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "EventBundle:Event:delete" }
+    methods:  DELETE
+
+my_participations:
+    path:     /my_participations
+    defaults: { _controller: "EventBundle:Event:myParticipations" }
+    methods:  [GET, POST]
+
+event_participate:
+    path:     /{id}/participate
+    defaults: { _controller: "EventBundle:Event:participate" }
+    methods:  [GET, POST]
+
+event_participate_cancel:
+    path:     /{id}/cancel_participate
+    defaults: { _controller: "EventBundle:Event:cancelParticipation" }
+    methods:  [GET, POST]
+
+event_pdf:
+    path:     /{id}/toPdf
+    defaults: { _controller: "EventBundle:Event:pdf" }
+    methods:  [GET, POST]
+
+# Admin / Back office section
+admin_event_index:
+    path:     /admin/events
+    defaults: { _controller: "EventBundle:Event:indexAdmin" }
+    methods:  [GET, POST]
+
+admin_accept_event:
+    path:     admin/{id}/accept_event
+    defaults: { _controller: "EventBundle:Event:acceptEvent" }
+    methods:  [GET, POST]

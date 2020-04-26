@@ -1,0 +1,114 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <br><br><br>
+        <div class="ef_post style2 mt30-smd">
+            <div class="ef_header">
+                <h4 class="hr_rate"><span class="text-thm">Détails de l'événement</span></h4>
+
+            </div>
+            <div class="thumb text-center">
+                <img class="img-fluid" src={{ asset('uploads/') ~ event.picture }} alt="4.jpg">
+            </div>
+            <div class="freelancer_review">
+                {% if event.state == 'Expired' %}
+                    <div class="everage_rating">4.5</div>
+                {% endif %}
+                <h4 class="title">{{ event.title }}</h4>
+                <p>{{ event.location }}</p>
+            </div>
+            <div class="details">
+                <div class="job_locate">
+                    <p>Date de début</p>
+                    <ul class="float-right">
+                        <li class="list-inline-item m0"><p>{{ event.startDate | date("j. F Y", "Europe/Paris") }}</p></li>
+                    </ul>
+                </div>
+                <div class="job_srate">
+                    <p>Date de fin</p>
+                    <p class="float-right">{{ event.endDate | date("j. F Y", "Europe/Paris") }}</p>
+                </div>
+                <div class="job_srate">
+                    <p>Nombre de place</p>
+                    <p class="float-right">{{ event.nbPlace}}</p>
+                </div>
+                <div class="job_srate">
+                    <p>Description</p>
+                    <p class="float-right">{{ event.description}}</p>
+                </div>
+                <div class="job_srate">
+                    <p>Etat</p>
+                    <p class="float-right">{{ event.state}}</p>
+                </div>
+                {% if event.user == app.user %}
+                        <div class="row">
+                            <div style="margin-left: 15px;" class="col-2">
+                                <button type="button" class="btn btn-warning"><a href="{{ path('event_edit', { 'id': event.id }) }}">Modifier Event</a></button>
+                            </div>
+                           <div class="col-2">
+                               <button type="button" class="btn btn-success"><a href="{{ path('event_pdf', {'id' :event.id})}}"> Générer PDF</a></button>
+                           </div>
+                           <div class="col-2">
+                               <button type="button" class="btn btn-primary"> <a title="Print Screen" onclick="window.print();" target="_blank" style="cursor:pointer;" > Print Me !  </a></button>
+                           </div>
+                            <div class="col-3"></div>
+                           <div class="col-2">
+                               {{ form_start(delete_form) }}
+                               <button type="submit" value="Delete" class="btn btn-danger"> Delete</button>
+                               {{ form_end(delete_form) }}
+                           </div>
+
+                        </div>
+
+{#                <div class="row">#}
+{#                    <div class="col-md-3">#}
+{#                        <div class="ef_prf_link mt10">#}
+{#                            <a class="btn btn-warning"  href="{{ path('event_edit', { 'id': event.id }) }}">Edit</a>#}
+{#                        </div>#}
+{#                    </div>#}
+
+{#                    <div class="col-md-3">#}
+{#                        <div class="ef_prf_link mt10">#}
+{#                            <a href="{{ path('event_pdf', {'id' :event.id})}}" class="btn btn-danger btn-font-md"> Generate PDF File</a>#}
+{#                        </div>#}
+{#                    </div>#}
+
+{#                    <div class="col-md-3">#}
+{#                        <div class="ef_prf_link mt10">#}
+{#                            <a title="Print Screen" onclick="window.print();" target="_blank" style="cursor:pointer;"  class=" btn btn-primary"> Print Me !  </a>#}
+{#                        </div>#}
+{#                    </div>#}
+
+{#                    <div class="col-md-3">#}
+{#                        <div class="ef_prf_link mt10">#}
+{#                            {{ form_start(delete_form) }}#}
+{#                            <input class="btn btn-danger "  type="submit" value="Delete">#}
+{#                            {{ form_end(delete_form) }}#}
+{#                        </div>#}
+{#                    </div>#}
+{#                </div>#}
+                {% elseif app.user in event.participants %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="ef_prf_link mt10">
+                                <a class="btn btn-block btn-transparent"  href="{{ path('event_edit', { 'id': event.id }) }}">Annuler ma participation</a>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="ef_prf_link mt10">
+                                {% if event.nbPlace > 0 %}
+                                <a class="btn btn-block btn-transparent"  href="{{ path('event_edit', { 'id': event.id }) }}">Participer</a>
+                                {% else %}
+                                <button class="btn btn-warning" disabled >Pas de place disponible!</button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+{% endblock %}

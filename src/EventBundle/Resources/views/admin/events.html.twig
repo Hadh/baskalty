@@ -1,0 +1,65 @@
+{% extends 'back.html.twig' %}
+
+{% block body %}
+    <div class="kt-portlet">
+        <div class="kt-portlet__head">
+            <div class="kt-portlet__head-label">
+                <h3 class="kt-portlet__head-title">
+                    Liste des événements ajoutés
+                </h3>
+            </div>
+        </div>
+        <div style="margin-top: -65px;" class="kt-portlet__body">
+            <!--begin::Section-->
+            <div class="kt-section">
+                <div class="kt-section__content">
+                    <table class="table">
+                        <thead class="thead-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Titre</th>
+                            <th>Description</th>
+                            <th>Lieu</th>
+                            <th>Places</th>
+                            <th>Etat</th>
+                            <th>Date Début</th>
+                            <th>Date Fin</th>
+                            <th>Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for event in events %}
+                        <tr>
+                            <th scope="row">{{ event.id }}</th>
+                            <td>{{ event.title }}</td>
+                            <td>{{ event.description }}</td>
+                            <td>{{ event.location }}</td>
+                            <td>{{ event.nbPlace }}</td>
+                            {% if event.state == 'accepted' %}
+                                <td>
+                                    <button type="button" class="btn btn-success btn-sm">{{ event.state }}</button>
+                                </td>
+                            {% else %}
+                                <td>
+                                    <button type="button" class="btn btn-warning btn-sm">{{ event.state }}</button>
+                                </td>
+                            {% endif %}
+                            <td>{{ event.startDate | date("j. F Y", "Europe/Paris") }}</td>
+                            <td>{{ event.endDate | date("j. F Y", "Europe/Paris") }}</td>
+                            <td>
+                                {% if event.state == 'pending' %}
+                                <a href="{{ path('admin_accept_event', {'id': event.id}) }}" class="btn btn-brand btn-elevate btn-primary btn-pill btn-elevate-air">Accept</a>
+                                {% endif %}
+                                <a href="#" class="btn btn-label-primary btn-pill">Something</a>
+
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!--end::Section-->
+        </div>
+    </div>
+{% endblock %}
