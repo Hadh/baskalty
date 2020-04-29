@@ -59,10 +59,6 @@ event_pdf:
     methods:  [GET, POST]
 
 # Admin / Back office section
-admin_event_index:
-    path:     /admin/events
-    defaults: { _controller: "EventBundle:Event:indexAdmin" }
-    methods:  [GET, POST]
 
 admin_accept_event:
     path:     admin/{id}/accept_event
@@ -73,3 +69,18 @@ admin_event_show:
     path:     /admin/{id}/show
     defaults: { _controller: "EventBundle:Event:showEventAdmin" }
     methods:  GET
+
+admin_event_new_show:
+    path:     /admin/events_new
+    defaults: { _controller: "EventBundle:Event:newEventsListAdmin" }
+    methods:  [GET, POST]
+
+admin_event_old_show:
+    path:     /admin/events_old
+    defaults: { _controller: "EventBundle:Event:oldEventsListAdmin" }
+    methods:  [GET, POST]
+
+event_new_admin:
+    path:     /admin/events/new
+    defaults: { _controller: "EventBundle:Event:newEventAdmin" }
+    methods:  [GET, POST]

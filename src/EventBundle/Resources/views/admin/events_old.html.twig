@@ -35,23 +35,14 @@
                             <td>{{ event.description }}</td>
                             <td>{{ event.location }}</td>
                             <td>{{ event.nbPlace }}</td>
-                            {% if event.state == 'accepted' %}
                                 <td>
                                     <button type="button" class="btn btn-success btn-sm">{{ event.state }}</button>
                                 </td>
-                            {% else %}
-                                <td>
-                                    <button type="button" class="btn btn-warning btn-sm">{{ event.state }}</button>
-                                </td>
-                            {% endif %}
                             <td>{{ event.startDate | date("j. F Y", "Europe/Paris") }}</td>
                             <td>{{ event.endDate | date("j. F Y", "Europe/Paris") }}</td>
                             <td>
-                                {% if event.state == 'pending' %}
-                                <a href="{{ path('admin_accept_event', {'id': event.id}) }}" class="btn btn-brand btn-elevate btn-primary btn-pill btn-elevate-air">Accept</a>
-                                {% endif %}
                                 <a href="{{ path('admin_event_show', {'id': event.id}) }}" class="btn btn-label-primary btn-pill">View Participants</a>
-
+                                <a href="{{ path('event_delete', {'id': event.id}) }}" class="btn btn-label-danger btn-pill">Supprimer</a>
                             </td>
                         </tr>
                         {% endfor %}

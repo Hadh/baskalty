@@ -4,6 +4,7 @@
 namespace AppBundle\Entity;
 
 use EventBundle\Entity\Event;
+use EventBundle\Entity\Participation;
 use FOS\UserBundle\Model\User as BaseUser;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -39,6 +40,11 @@ class User extends BaseUser
      * @ORM\ManyToMany(targetEntity="EventBundle\Entity\Event",mappedBy="participants")
      */
     private $evenements;
+
+    /**
+     * @ORM\OneToMany(targetEntity="EventBundle\Entity\Participation", mappedBy="participant")
+     * */
+    protected $participation;
 
     /**
      * @ORM\OneToMany(targetEntity="EventBundle\Entity\Event", mappedBy="user")
@@ -118,31 +124,31 @@ class User extends BaseUser
     /**
      * @return mixed
      */
-    public function getEvenements()
+    public function getParticipation()
     {
-        return $this->evenements;
+        return $this->participation;
     }
 
     /**
-     * @param mixed $evenements
+     * @param mixed $participation
      */
-    public function setEvenements($evenements)
+    public function setParticipation($participation)
     {
-        $this->evenements = $evenements;
+        $this->participation = $participation;
     }
-    public function addEvenements(Event $evenements)
+    public function addParticipation(Participation $participation)
     {
-        if (!$this->evenements->contains($evenements)) {
-            $this->evenements[] = $evenements;
+        if (!$this->participation->contains($participation)) {
+            $this->participation[] = $participation;
         }
 
         return $this;
     }
 
-    public function removeEvenements(Event $evenements)
+    public function removeParticipation(Participation $participation)
     {
-        if ($this->evenements->contains($evenements)) {
-            $this->evenements->removeElement($evenements);
+        if ($this->participation->contains($participation)) {
+            $this->participation->removeElement($participation);
         }
 
         return $this;

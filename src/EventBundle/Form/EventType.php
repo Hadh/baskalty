@@ -52,6 +52,12 @@ class EventType extends AbstractType
                     'class' => 'form-control',
                 ]
             ])
+            ->add('categorie',TextType::class,[
+                'label' =>  'Catégorie',
+                'attr'  => [
+                    'class' => 'form-control',
+                ]
+            ])
             ->add('location',TextType::class,[
                 'label' =>  'Lieu',
                 'attr'  => [
@@ -67,7 +73,7 @@ class EventType extends AbstractType
             ->add('submit',SubmitType::class,[
                 'label' =>  'Ajouter',
                     'attr'  => [
-                        'class' => 'btn btn-lg btn-thm',]
+                        'class' => 'btn btn-primary  btn-thm',]
 
             ]);
     }/**

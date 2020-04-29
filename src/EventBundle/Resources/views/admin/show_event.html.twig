@@ -65,14 +65,14 @@
                         </tr>
                         </thead>
                         <tbody>
-                        {% for user in event.participants %}
+                        {% for part in event.participation %}
                         <tr>
-                            <th scope="row">{{ user.id }}</th>
-                            <td>{{ user.firstName }}</td>
-                            <td>{{ user.lastName }}</td>
-                            <td>{{ user.email }}</td>
-                            <td>{{ user.username }}</td>
-                            <td style="width: 25%;"><img style="width: 25%;" src="{{ asset(user.username ~ '.png') }}" alt=""></td>
+                            <th scope="row">{{ part.participant.id }}</th>
+                            <td>{{ part.participant.firstName }}</td>
+                            <td>{{ part.participant.lastName }}</td>
+                            <td>{{ part.participant.email }}</td>
+                            <td>{{ part.participant.username }}</td>
+                            <td style="width: 25%;"><img style="width: 25%;" src="{{ asset(part.participant.username ~ '.png') }}" alt=""></td>
                         </tr>
                         {% endfor %}
 

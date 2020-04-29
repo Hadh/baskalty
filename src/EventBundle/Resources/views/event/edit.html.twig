@@ -1,21 +1,31 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <h1>Event edit</h1>
+<section class="our-dashbord dashbord">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 col-lg-8 col-xl-9">
+                <div class="my_profile_form_area employer_profile">
+                    <div class="row">
+                        <center>
+                            <div class="col-lg-12">
+                                <h4 class="fz20 mb20">Modifier l'événement ✅</h4>
+                            </div>
+                        </center>
+                        <div class="col-lg-12 mt30">
+                            <div class="my_profile_thumb_edit"></div>
+                        </div>
 
-    {{ form_start(edit_form) }}
-        {{ form_widget(edit_form) }}
-        <input type="submit" value="Edit" />
-    {{ form_end(edit_form) }}
+                {{ form_start(edit_form, { 'attr': {'class': 'col-lg-12' }}) }}
+                    {{ form_widget(edit_form) }}
+                                    <br>
+                    <input class="btn btn-primary" type="submit" value="Edit" />
+                {{ form_end(edit_form) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
-    <ul>
-        <li>
-            <a href="{{ path('event_index') }}">Back to the list</a>
-        </li>
-        <li>
-            {{ form_start(delete_form) }}
-                <input type="submit" value="Delete">
-            {{ form_end(delete_form) }}
-        </li>
-    </ul>
 {% endblock %}

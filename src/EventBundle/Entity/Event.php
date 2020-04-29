@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Event
  *
- * @ORM\Table(name="event")
+ * @ORM\Table(name="evenement")
  * @ORM\Entity(repositoryClass="EventBundle\Repository\EventRepository")
  */
 class Event
@@ -16,7 +16,7 @@ class Event
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="idEvenement", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
@@ -25,71 +25,75 @@ class Event
     /**
      * @var string
      *
-     * @ORM\Column(name="title", type="string", length=255, nullable=true)
+     * @ORM\Column(name="nom", type="string", length=255, nullable=true)
      */
     private $title;
 
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="startDate", type="date", nullable=true)
+     * @ORM\Column(name="DateD", type="date", nullable=true)
      */
     private $startDate;
 
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="endDate", type="date", nullable=true)
+     * @ORM\Column(name="DateF", type="date", nullable=true)
      */
     private $endDate;
 
     /**
      * @var int
      *
-     * @ORM\Column(name="nbPlace", type="integer", nullable=true)
+     * @ORM\Column(name="places", type="integer", nullable=true)
      */
     private $nbPlace;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="description", type="text", nullable=true)
+     * @ORM\Column(name="Description", type="text", nullable=true)
      */
     private $description;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="state", type="string", length=255, nullable=true, columnDefinition="ENUM('pending','accepted')")
+     * @ORM\Column(name="Etat", type="string", length=255, nullable=true, columnDefinition="ENUM('pending','accepted')")
      */
     private $state;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="location", type="string", length=255, nullable=true)
+     * @ORM\Column(name="emplacement", type="string", length=255, nullable=true)
      */
     private $location;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="picture", type="string", length=255, nullable=true)
+     * @ORM\Column(name="categorie", type="string", length=255, nullable=true)
+     */
+    private $categorie;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="img", type="string", length=255, nullable=true)
      */
     private $picture;
 
+
     /**
-     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\User", inversedBy="evenements")
-     * @ORM\JoinTable(name="participant",
-     *      joinColumns={@ORM\JoinColumn(name="id_evenement", referencedColumnName="id")},
-     *      inverseJoinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")}
-     *      )
-     */
-    private $participants;
+     * @ORM\OneToMany(targetEntity="Participation" , mappedBy="event")
+     * */
+    protected $participation;
 
     /**
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\User", inversedBy="myEventList")
-     * @ORM\JoinColumn(nullable=true)
+     * @ORM\JoinColumn(name= "idUtilisateur",nullable=true)
      */
     private $user;
 
@@ -306,32 +310,32 @@ class Event
     /**
      * @return mixed
      */
-    public function getParticipants()
+    public function getParticipation()
     {
-        return $this->participants;
+        return $this->participation;
     }
 
     /**
-     * @param mixed $participants
+     * @param mixed $participation
      */
-    public function setParticipants($participants)
+    public function setParticipation($participation)
     {
-        $this->participants = $participants;
+        $this->participation = $participation;
     }
 
-    public function addParticipants(User $user)
+    public function addParticipation(Participation $participation)
     {
-        if (!$this->participants->contains($user)) {
-            $this->participants[] = $user;
+        if (!$this->participation->contains($participation)) {
+            $this->participation[] = $participation;
         }
 
         return $this;
     }
 
-    public function removeParticipants(User $user)
+    public function removeParticipation(Participation $participation)
     {
-        if ($this->participants->contains($user)) {
-            $this->participants->removeElement($user);
+        if ($this->participation->contains($participation)) {
+            $this->participation->removeElement($participation);
         }
 
         return $this;
@@ -367,6 +371,22 @@ class Event
     public function setCreatedAt($created_at)
     {
         $this->created_at = $created_at;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCategorie()
+    {
+        return $this->categorie;
+    }
+
+    /**
+     * @param string $categorie
+     */
+    public function setCategorie($categorie)
+    {
+        $this->categorie = $categorie;
     }
 
 

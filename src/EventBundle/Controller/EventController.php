@@ -4,6 +4,7 @@ namespace EventBundle\Controller;
 
 use AppBundle\Entity\User;
 use EventBundle\Entity\Event;
+use EventBundle\Entity\Participation;
 use EventBundle\Repository\EventRepository;
 use Knp\Bundle\SnappyBundle\Snappy\Response\PdfResponse;
 use Swift_Attachment;
@@ -107,9 +108,15 @@ class EventController extends Controller
     public function showAction(Event $event)
     {
         $deleteForm = $this->createDeleteForm($event);
+        $userParticipated = false;
+        /* @var $part Participation*/
+        foreach ($event->getParticipation() as $part) {
+            if ($this->getUser() == $part->getParticipant()) $userParticipated = true;
+        }
 
         return $this->render('@Event/event/show.html.twig', array(
             'event' => $event,
+            'userParticipated' => $userParticipated,
             'delete_form' => $deleteForm->createView(),
         ));
     }
@@ -123,10 +130,18 @@ class EventController extends Controller
         $deleteForm = $this->createDeleteForm($event);
         $editForm = $this->createForm('EventBundle\Form\EventTypeEdit', $event);
         $editForm->handleRequest($request);
-
+        $users = [];
         if ($editForm->isSubmitted() && $editForm->isValid()) {
             $this->getDoctrine()->getManager()->flush();
-            $users = $event->getParticipants();
+
+            /* @var $eventParticipation [] Participation */
+            $eventParticipation = $event->getParticipation();
+
+            /* @var Participation $participation */
+            foreach ($eventParticipation as $participation) {
+                array_push($users, $participation->getParticipant());
+            }
+
 
             /* Sending emails to the participants when the event is updated */
             foreach ($users as $user) {
@@ -151,13 +166,19 @@ class EventController extends Controller
     {
         $form = $this->createDeleteForm($event);
         $form->handleRequest($request);
-
+        $users= [];
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
             $em->remove($event);
             $em->flush();
 
-            $users = $event->getParticipants();
+            /* @var $eventParticipation [] Participation */
+            $eventParticipation = $event->getParticipation();
+
+            /* @var Participation $participation */
+            foreach ($eventParticipation as $participation) {
+                array_push($users, $participation->getParticipant());
+            }
 
             /* Sending emails to the participants when the event is deleted */
             foreach ($users as $user) {
@@ -293,10 +314,21 @@ class EventController extends Controller
         $em = $this->getDoctrine()->getManager();
         /* @var $user User*/
         $user = $this->getUser();
-        $participation = $user->getEvenements();
+
+        $userParts = [];
+
+        /* @var $userParticipations [] Participation */
+        $userParticipations = $user->getParticipation();
+
+        /* @var Participation $participation */
+        foreach ($userParticipations as $participation) {
+            array_push($userParts, $participation->getEvent());
+        }
+
+
 
         $participPagniate  = $this->get('knp_paginator')->paginate(
-            $participation,
+            $userParts,
             $request->query->get('page', 1)/*le numéro de la page à afficher*/,
             4/*nbre d'éléments par page*/
         );
@@ -320,9 +352,17 @@ class EventController extends Controller
 
         $dataUri = $qrCode->writeDataUri();
 
-        $event->addParticipants($user);
+        $newParticipation = new Participation();
+        $newParticipation->setEvent($event);
+        $newParticipation->setParticipant($user);
+
+        $event->addParticipation($newParticipation);
         $event->setNbPlace($event->getNbPlace() - 1);
-        $user->addEvenements($event);
+        $user->addParticipation($newParticipation);
+
+        $em->persist($newParticipation);
+        $em->flush();
+
         $em->persist($event);
         $em->persist($user);
         $em->flush();
@@ -338,9 +378,12 @@ class EventController extends Controller
         /* @var User $user*/
         $user = $this->getUser();
 
-        $event->removeParticipants($user);
+        $currentParticipation = $em->getRepository(Participation::class)->findBy(['participant' => $user, 'event' => $event]);
+        $event->removeParticipation($currentParticipation[0]);
         $event->setNbPlace($event->getNbPlace() + 1);
-        $user->removeEvenements($event);
+
+        $user->removeParticipation($currentParticipation[0]);
+        $em->remove($currentParticipation[0]);
         $em->persist($event);
         $em->persist($user);
         $em->flush();
@@ -353,16 +396,19 @@ class EventController extends Controller
         $mail = \Swift_Message::newInstance()
             ->setSubject($subject)
             ->setFrom('baskaltyinc@gmail.com')
-            ->setTo($utilisateur->getEmail())
-            ->attach(
+            ->setTo($utilisateur->getEmail());
+
+        if($qr !== null) {
+            $mail->attach(
                 Swift_Attachment::fromPath($this->get('kernel')->getRootDir() . '/../web/'.$utilisateur->getUsername().'.png')
-            ->setDisposition('inline'));
+                    ->setDisposition('inline'));
+        }
 
         $mail->setBody(
             $this->renderView(
                 $view,
                 array('user' => $utilisateur,
-                    'event' => $event, 'qr' => $qr)
+                    'event' => $event)
             ),
             'text/html'
         );
@@ -402,13 +448,27 @@ class EventController extends Controller
     /***-----------------------***/
     /* Back Office / Admin Section-----*/
     /***-----------------------***/
-    public function indexAdminAction(Request $request)
+
+    public function oldEventsListAdminAction(Request $request)
     {
-        $em = $this->getDoctrine()->getManager();
+        $events = $this->getDoctrine()
+            ->getManager()
+            ->createQuery("SELECT e FROM EventBundle:Event e WHERE e.endDate < CURRENT_DATE() AND e.state = 'accepted'")
+            ->getResult();
 
-        $events = $em->getRepository('EventBundle:Event')->findAll();
+        return $this->render('@Event/admin/events_old.html.twig', array(
+            'events' => $events
+        ));
+    }
 
-        return $this->render('@Event/admin/events.html.twig', array(
+    public function newEventsListAdminAction(Request $request)
+    {
+        $events = $this->getDoctrine()
+            ->getManager()
+            ->createQuery("SELECT e FROM EventBundle:Event e WHERE e.endDate > CURRENT_DATE()")
+            ->getResult();
+
+        return $this->render('@Event/admin/events_new.html.twig', array(
             'events' => $events
         ));
     }
@@ -420,8 +480,10 @@ class EventController extends Controller
         $event = $em->getRepository(Event::class)->find($id);
         $event->setState('accepted');
         $em->persist($event);
-
         $em->flush();
+
+        $this->sendEmail($event->getUser(),'Votre événement est Acccepté !','@Event/event/emailTemplateAccept.html.twig', $event);
+
         return $this->redirectToRoute('admin_event_index');
     }
 
@@ -433,6 +495,38 @@ class EventController extends Controller
 
         return $this->render('@Event/admin/show_event.html.twig', array(
             'event' => $event
+        ));
+    }
+
+    public function newEventAdminAction(Request $request)
+    {
+        $event = new Event();
+        $form = $this->createForm('EventBundle\Form\EventType', $event);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            /**
+             * @var UploadedFile $file
+             */
+            $file=$event->getPicture();
+            $picture = $request->get('imageUpload');
+            //dump($picture);die;
+            $filename = $this->generateUniqueFileName().'.'.$file->guessExtension();
+            $file->move($this->getParameter('images_directory'),$filename);
+            $event->setPicture($filename);
+            $event->setState('accepted');
+            $event->setCreatedAt(new \DateTime());
+            $event->setUser($this->getUser());
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($event);
+            $em->flush();
+
+            return $this->redirectToRoute('admin_event_show', array('id' => $event->getId()));
+        }
+
+        return $this->render('@Event/admin/event_new.html.twig', array(
+            'event' => $event,
+            'form' => $form->createView(),
         ));
     }
 
