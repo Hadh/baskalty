@@ -61,7 +61,9 @@
             </table>
     <h3>Liste des participatns</h3>
         <ul>
-            {% if event.participants[0] != null %}
+            {% if event.participation == null %}
+                <li>Pas de Participations!</li>
+            {% else %}
             {% for user in users %}
             <li>
                 - # {{ user.id}} : {{ user.firstName }} - {{ user.lastName }} - {{ user.email }}

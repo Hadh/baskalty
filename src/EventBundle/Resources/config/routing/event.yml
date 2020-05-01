@@ -93,4 +93,4 @@ admin_refuse_event:
 admin_event_delete:
     path:     /admin/{id}/delete
     defaults: { _controller: "EventBundle:Event:adminDelete" }
-    methods:  [DELETE,GET, POST]
+    methods:  [GET]

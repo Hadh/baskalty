@@ -423,7 +423,15 @@ class EventController extends Controller
         /* @var Event $event */
         $event = $em->getRepository(Event::class)->find($id);
 
-        $users = $event->getParticipants();
+        $users = [];
+
+        /* @var $eventParticipation [] Participation */
+        $eventParticipation = $event->getParticipation();
+
+        /* @var Participation $participation */
+        foreach ($eventParticipation as $participation) {
+            array_push($users, $participation->getParticipant());
+        }
 
         $pdfOptions = new Options();
         $pdfOptions->set('defaultFont', 'Arial');
@@ -550,15 +558,12 @@ class EventController extends Controller
      * Deletes a event entity.
      *
      */
-    public function adminDeleteAction(Request $request, Event $event)
+    public function adminDeleteAction($id)
     {
-        $form = $this->createDeleteForm($event);
-        $form->handleRequest($request);
+        $em = $this->getDoctrine()->getManager();
+        /* @var Event $event*/
+        $event = $em->getRepository(Event::class)->find($id);
         $users= [];
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->remove($event);
-            $em->flush();
 
             /* @var $eventParticipation [] Participation */
             $eventParticipation = $event->getParticipation();
@@ -573,7 +578,13 @@ class EventController extends Controller
                 $this->sendEmail($user,'Event Annulé !','@Event/event/emailTemplateNoEvent.html.twig', $event);
             }
 
+        /* @var Participation $participation */
+        foreach ($eventParticipation as $participation) {
+            $event->removeParticipation($participation);
+            $em->remove($participation);
         }
+        $em->remove($event);
+        $em->flush();
 
         return $this->redirectToRoute('admin_event_old_show');
     }
