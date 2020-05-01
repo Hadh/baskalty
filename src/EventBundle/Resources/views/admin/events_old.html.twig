@@ -42,7 +42,7 @@
                             <td>{{ event.endDate | date("j. F Y", "Europe/Paris") }}</td>
                             <td>
                                 <a href="{{ path('admin_event_show', {'id': event.id}) }}" class="btn btn-label-primary btn-pill">View Participants</a>
-                                <a href="{{ path('event_delete', {'id': event.id}) }}" class="btn btn-label-danger btn-pill">Supprimer</a>
+                                <a href="{{ path('admin_event_delete', {'id': event.id}) }}" class="btn btn-label-danger btn-pill">Supprimer</a>
                             </td>
                         </tr>
                         {% endfor %}

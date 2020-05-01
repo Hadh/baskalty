@@ -484,7 +484,23 @@ class EventController extends Controller
 
         $this->sendEmail($event->getUser(),'Votre événement est Acccepté !','@Event/event/emailTemplateAccept.html.twig', $event);
 
-        return $this->redirectToRoute('admin_event_index');
+        return $this->redirectToRoute('admin_event_new_show');
+    }
+
+    public function refuseEventAction ($id)
+    {
+        $em = $this->getDoctrine()->getManager();
+        /* @var Event $event*/
+        $event = $em->getRepository(Event::class)->find($id);
+
+        $event->setState('refused');
+        $em->persist($event);
+        $em->flush();
+
+        $this->sendEmail($event->getUser(), 'Evénement refusé!', '@Event/event/emailTemplateRefused.html.twig', $event);
+
+        return $this->redirectToRoute('admin_event_new_show');
+
     }
 
     public function showEventAdminAction($id)
@@ -528,6 +544,38 @@ class EventController extends Controller
             'event' => $event,
             'form' => $form->createView(),
         ));
+    }
+
+    /**
+     * Deletes a event entity.
+     *
+     */
+    public function adminDeleteAction(Request $request, Event $event)
+    {
+        $form = $this->createDeleteForm($event);
+        $form->handleRequest($request);
+        $users= [];
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $em->remove($event);
+            $em->flush();
+
+            /* @var $eventParticipation [] Participation */
+            $eventParticipation = $event->getParticipation();
+
+            /* @var Participation $participation */
+            foreach ($eventParticipation as $participation) {
+                array_push($users, $participation->getParticipant());
+            }
+
+            /* Sending emails to the participants when the event is deleted */
+            foreach ($users as $user) {
+                $this->sendEmail($user,'Event Annulé !','@Event/event/emailTemplateNoEvent.html.twig', $event);
+            }
+
+        }
+
+        return $this->redirectToRoute('admin_event_old_show');
     }
 
 }

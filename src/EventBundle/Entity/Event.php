@@ -60,7 +60,7 @@ class Event
     /**
      * @var string
      *
-     * @ORM\Column(name="Etat", type="string", length=255, nullable=true, columnDefinition="ENUM('pending','accepted')")
+     * @ORM\Column(name="Etat", type="string", length=255, nullable=true, columnDefinition="ENUM('pending','accepted', 'refused')")
      */
     private $state;
 

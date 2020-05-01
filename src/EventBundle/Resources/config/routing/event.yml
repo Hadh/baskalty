@@ -84,3 +84,13 @@ event_new_admin:
     path:     /admin/events/new
     defaults: { _controller: "EventBundle:Event:newEventAdmin" }
     methods:  [GET, POST]
+
+admin_refuse_event:
+    path:     admin/{id}/refuse_event
+    defaults: { _controller: "EventBundle:Event:refuseEvent" }
+    methods:  [GET, POST]
+
+admin_event_delete:
+    path:     /admin/{id}/delete
+    defaults: { _controller: "EventBundle:Event:adminDelete" }
+    methods:  [DELETE,GET, POST]

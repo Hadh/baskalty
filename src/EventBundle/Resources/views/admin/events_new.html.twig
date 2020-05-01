@@ -43,7 +43,7 @@
                                 {% if event.state == 'pending' %}
                                 <a href="{{ path('admin_accept_event', {'id': event.id}) }}" class="btn btn-brand btn-elevate btn-primary btn-pill btn-elevate-air">Accept</a>
                                 {% endif %}
-                                <a href="{{ path('admin_event_show', {'id': event.id}) }}" class="btn btn-label-primary btn-pill">View Participants</a>
+                                <a href="{{ path('admin_refuse_event', {'id': event.id}) }}" class="btn btn-brand btn-elevate btn-danger btn-pill btn-elevate-air">Refuser</a>
 
                             </td>
                         </tr>
@@ -109,7 +109,7 @@
                                     {% if event.state == 'pending' %}
                                         <a href="{{ path('admin_accept_event', {'id': event.id}) }}" class="btn btn-brand btn-elevate btn-primary btn-pill btn-elevate-air">Accept</a>
                                     {% endif %}
-                                    <a href="{{ path('admin_event_show', {'id': event.id}) }}" class="btn btn-label-primary btn-pill">View Participants</a>
+                                    <a href="{{ path('admin_event_show', {'id': event.id}) }}" class="btn btn-label-primary btn-pill">Voir les participations</a>
 
                                 </td>
                             </tr>
